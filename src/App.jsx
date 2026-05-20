@@ -40,6 +40,17 @@ function shuffleItems(items) {
   return [...items].sort(() => Math.random() - 0.5);
 }
 
+function getInitialGame() {
+  const path = window.location.pathname.toLowerCase();
+  const hash = window.location.hash.toLowerCase();
+
+  if (path.includes("fake-news") || hash.includes("news")) {
+    return "news";
+  }
+
+  return "thief";
+}
+
 function ThiefGame() {
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(GAME_SECONDS);
@@ -237,7 +248,12 @@ function FakeNewsGame() {
 }
 
 export default function App() {
-  const [game, setGame] = useState("thief");
+  const [game, setGame] = useState(() => getInitialGame());
+
+  function changeGame(nextGame) {
+    setGame(nextGame);
+    window.history.replaceState(null, "", nextGame === "news" ? "#news" : "#thief");
+  }
 
   return (
     <main className="app">
@@ -253,14 +269,14 @@ export default function App() {
           <button
             className={game === "thief" ? "active" : ""}
             type="button"
-            onClick={() => setGame("thief")}
+            onClick={() => changeGame("thief")}
           >
             도둑잡기
           </button>
           <button
             className={game === "news" ? "active" : ""}
             type="button"
-            onClick={() => setGame("news")}
+            onClick={() => changeGame("news")}
           >
             가짜 뉴스
           </button>
